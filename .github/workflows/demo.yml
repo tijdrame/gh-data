@@ -18,6 +18,8 @@ jobs:
   build:
     needs: test
     runs-on: ubuntu-latest
+    outputs:
+      script-file: ${{ steps.publish.outputs.myvar }}
     steps:
       - name: Get code
         uses: actions/checkout@v5
@@ -25,6 +27,10 @@ jobs:
         run: npm ci
       - name: Build website
         run: npm run build
+      - name: Publish JS filename
+        id: publish
+        run: find dist/assets/*.js -type f -execdir echo 'myvar={}'  >> $GITHUB_OUTPUT';'
+        # cette cmd find permet d'afficher le nom du fichier js qui est dans dist
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -43,6 +49,8 @@ jobs:
         with:
           name: dist-files #meme nom que dans upload
       - name: Output content
-        run: ls 
+        run: ls #va lister le contenu de l'artifact
+      - name: Output filename
+        run: echo "${{ needs.build.outputs.script-file }}"
       - name: Deploy
         run: echo "Deploying..."
