@@ -10,11 +10,13 @@ jobs:
       - name: Get code
         uses: actions/checkout@v5
       - name: Cache dependencies
-        uses: actions/cache@v3
+        id: cache-npm
+        uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
-          # si le hash de package-lock change on va invalider le cache
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache-
       - name: Install dependencies
         run: npm ci
       - name: Lint code
@@ -30,10 +32,12 @@ jobs:
       - name: Get code
         uses: actions/checkout@v5
       - name: Cache dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: deps-node-modules-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-npm-cache-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-cache
       - name: Install dependencies
         run: npm ci
       - name: Build website
